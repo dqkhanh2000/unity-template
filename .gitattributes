@@ -1,0 +1,47 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Unity specific
+*.cs text eol=crlf
+*.shader text eol=crlf
+*.cginc text eol=crlf
+*.compute text eol=crlf
+*.hlsl text eol=crlf
+*.glsl text eol=crlf
+*.json text eol=crlf
+*.xml text eol=crlf
+*.txt text eol=crlf
+*.md text eol=crlf
+*.yml text eol=crlf
+*.yaml text eol=crlf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.ttf binary
+*.otf binary
+*.unity binary
+*.prefab binary
+*.mat binary
+*.asset binary
+*.meta binary
+*.dll binary
+*.exe binary
+*.pdb binary
+*.mdb binary
+*.dylib binary
+*.so binary
+*.a binary
+*.lib binary
+*.app binary
+*.apk binary
+*.aab binary
+*.unitypackage binary 

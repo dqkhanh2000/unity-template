@@ -1,0 +1,40 @@
+{
+  "name": "com.kane.template",
+  "version": "1.0.0",
+  "displayName": "Kane Template",
+  "description": "A comprehensive game development template with core systems and event management",
+  "unity": "2022.3",
+  "dependencies": {
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "keywords": [
+    "template",
+    "game",
+    "core",
+    "events",
+    "level",
+    "manager"
+  ],
+  "author": {
+    "name": "Kane",
+    "email": "dqkhanh.2k@gmail.com",
+    "url": "https://github.com/dqkhanh2000"
+  },
+  "samples": [
+    {
+      "displayName": "Basic Game Template",
+      "description": "Basic example showing how to use the Kane Template systems",
+      "path": "Example"
+    }
+  ],
+  "documentationUrl": "https://github.com/dqkhanh2000/unity-template",
+  "changelogUrl": "https://github.com/dqkhanh2000/unity-template/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/dqkhanh2000/unity-template/blob/main/LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dqkhanh2000/unity-template.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+} 
