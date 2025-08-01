@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -263,4 +262,3 @@ namespace KaneTemplate.Core.Editor.Editors
         #endregion
     }
 }
-#endif 

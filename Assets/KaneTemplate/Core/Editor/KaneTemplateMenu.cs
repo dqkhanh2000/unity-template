@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace KaneTemplate.Editor
+namespace KaneTemplate.Core.Editor
 {
     public static class KaneTemplateMenu
     {
@@ -74,7 +74,7 @@ namespace KaneTemplate.Editor
         }
 
         [MenuItem(MENU_PATH + "Documentation/EventSystem README")]
-        public static void OpenEventSystemREADME()
+        public static void OpenEventSystemReadme()
         {
             string readmePath = "Assets/KaneTemplate/EventSystem/README.md";
             if (File.Exists(readmePath))
