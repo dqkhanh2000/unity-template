@@ -27,6 +27,8 @@ namespace GameTemplate.Runtime.Core
         private bool _isTransitioning = false;
 
         // Events
+        
+        public UnityEvent OnLevelManagerInitializing;
         public UnityEvent OnLevelManagerInitialized;
         public UnityEvent<Level> OnLevelStarted;
         public UnityEvent<Level> OnLevelCompleted;
@@ -74,6 +76,28 @@ namespace GameTemplate.Runtime.Core
         {
             if (levelContainer == null)
                 levelContainer = transform;
+
+            if (levelDataCollection == null)
+            {
+                Debug.LogError("LevelDataCollection is not assigned in LevelManager!");
+                return;
+            }
+            
+            if (levelLoader == null)
+            {
+                Debug.LogError("LevelLoader is not assigned in LevelManager!");
+                return;
+            }
+            
+            if(autoStartFirstLevel)
+            {
+                StartLevelManager();
+                OnLevelManagerInitialized?.Invoke();
+            }
+            else
+            {
+                OnLevelManagerInitializing?.Invoke();
+            }
 
             Debug.Log("LevelManager initialized");
         }
@@ -328,8 +352,27 @@ namespace GameTemplate.Runtime.Core
                 yield break;
             }
 
-            // Create new level
+            var task = levelLoader.LoadLevel(levelData, levelContainer);
+            yield return new WaitUntil(() => task.IsCompleted);
+            var level = task.Result;
+            if (level)
+            {
+                CurrentLevel = level;
+                CurrentLevelData = levelData;
 
+                // Subscribe to level events
+                SubscribeToLevelEvents(CurrentLevel);
+
+                // Trigger level started event
+                OnLevelStarted?.Invoke(CurrentLevel);
+                LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelStarted, CurrentLevelData.LevelId);
+
+                Debug.Log($"Started level: {CurrentLevelData.LevelName}");
+            }
+            else
+            {
+                Debug.LogError($"Failed to start level: {levelId}");
+            }
 
             _isLoading = false;
         }
