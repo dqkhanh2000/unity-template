@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace GameTemplate.Runtime.Core
 {
@@ -11,33 +12,34 @@ namespace GameTemplate.Runtime.Core
     {
         // Singleton instance
         public static LevelManager Instance { get; private set; }
-        
-        [Header("Level Management")]
-        [SerializeField] private Transform levelContainer;
+
+        [Header("Level Management")] [SerializeField]
+        private Transform levelContainer;
+
         [SerializeField] private bool autoStartFirstLevel = true;
         [SerializeField] private float levelTransitionDelay = 0f;
         [SerializeField] private LevelDataCollection levelDataCollection;
         [SerializeField] private bool isLoopingLevels = false;
         [SerializeField] private LevelLoader levelLoader;
-        
+
         // State
         private bool _isLoading = false;
         private bool _isTransitioning = false;
-        
+
         // Events
-        public static event Action<LevelManager> OnLevelManagerInitialized;
-        public static event Action<LevelManager, Level> OnLevelStarted;
-        public static event Action<LevelManager, Level> OnLevelCompleted;
-        public static event Action<LevelManager, Level> OnLevelFailed;
-        public static event Action<LevelManager, Level> OnLevelReloaded;
-        public static event Action<LevelManager, int> OnLevelUnlocked;
-        
+        public UnityEvent OnLevelManagerInitialized;
+        public UnityEvent<Level> OnLevelStarted;
+        public UnityEvent<Level> OnLevelCompleted;
+        public UnityEvent<Level> OnLevelFailed;
+        public UnityEvent<Level> OnLevelReloaded;
+        public UnityEvent<int> OnLevelUnlocked;
+
         public Level CurrentLevel { get; set; }
         public LevelData CurrentLevelData { get; set; }
         public bool IsLoading => _isLoading;
         public bool IsTransitioning => _isTransitioning;
         public bool HasCurrentLevel => CurrentLevel != null;
-        
+
         private void Awake()
         {
             // Singleton pattern
@@ -52,7 +54,7 @@ namespace GameTemplate.Runtime.Core
                 Destroy(gameObject);
             }
         }
-        
+
         private void OnDestroy()
         {
             if (Instance == this)
@@ -64,7 +66,7 @@ namespace GameTemplate.Runtime.Core
                 }
             }
         }
-        
+
         /// <summary>
         /// Initializes the level manager.
         /// </summary>
@@ -72,10 +74,10 @@ namespace GameTemplate.Runtime.Core
         {
             if (levelContainer == null)
                 levelContainer = transform;
-                
+
             Debug.Log("LevelManager initialized");
         }
-        
+
         /// <summary>
         /// Starts the level manager and loads the first level or the level from player data.
         /// </summary>
@@ -86,10 +88,10 @@ namespace GameTemplate.Runtime.Core
                 Debug.LogWarning("LevelManager is already loading!");
                 return;
             }
-            
+
             StartCoroutine(StartLevelManagerCoroutine());
         }
-        
+
         /// <summary>
         /// Starts a specific level by ID if it's unlocked.
         /// </summary>
@@ -102,7 +104,7 @@ namespace GameTemplate.Runtime.Core
                 Debug.LogWarning("Cannot start level while loading or transitioning!");
                 return false;
             }
-            
+
             // Check if level is unlocked
             if (GameManager.Instance?.PlayerData != null)
             {
@@ -112,11 +114,12 @@ namespace GameTemplate.Runtime.Core
                     return false;
                 }
             }
+
             CurrentLevelData = levelDataCollection.GetLevelById(levelId);
             StartCoroutine(StartLevelCoroutine(levelId));
             return true;
         }
-        
+
         /// <summary>
         /// Reloads the current level.
         /// </summary>
@@ -127,16 +130,16 @@ namespace GameTemplate.Runtime.Core
                 Debug.LogWarning("No current level to reload!");
                 return;
             }
-            
+
             if (_isLoading || _isTransitioning)
             {
                 Debug.LogWarning("Cannot reload level while loading or transitioning!");
                 return;
             }
-            
+
             StartCoroutine(ReloadLevelCoroutine());
         }
-        
+
         /// <summary>
         /// Loads the next level if it's unlocked.
         /// </summary>
@@ -148,9 +151,9 @@ namespace GameTemplate.Runtime.Core
                 Debug.LogWarning("Cannot load next level while loading or transitioning!");
                 return false;
             }
-            
+
             var nextLevelIndex = CurrentLevel.LevelData.LevelId + 1;
-            if(nextLevelIndex > levelDataCollection.levels.Length - 1)
+            if (nextLevelIndex > levelDataCollection.levels.Length - 1)
             {
                 if (isLoopingLevels)
                 {
@@ -162,6 +165,7 @@ namespace GameTemplate.Runtime.Core
                     return false; // No next level available
                 }
             }
+
             var nextLevelData = levelDataCollection.levels[nextLevelIndex];
             if (nextLevelData != null)
             {
@@ -173,7 +177,7 @@ namespace GameTemplate.Runtime.Core
                 return false;
             }
         }
-        
+
         /// <summary>
         /// Loads the previous level.
         /// </summary>
@@ -184,7 +188,7 @@ namespace GameTemplate.Runtime.Core
                 Debug.LogWarning("Cannot load previous level while loading or transitioning!");
                 return;
             }
-            
+
             var previousLevelIndex = CurrentLevel.LevelData.LevelId - 1;
             if (previousLevelIndex < 0)
             {
@@ -198,7 +202,7 @@ namespace GameTemplate.Runtime.Core
                     return; // No previous level available
                 }
             }
-            
+
             var previousLevelData = levelDataCollection.levels[previousLevelIndex];
             if (previousLevelData != null)
             {
@@ -209,7 +213,7 @@ namespace GameTemplate.Runtime.Core
                 Debug.Log("No previous level available!");
             }
         }
-        
+
         /// <summary>
         /// Gets all unlocked levels for the current player.
         /// </summary>
@@ -227,9 +231,10 @@ namespace GameTemplate.Runtime.Core
                     }
                 }
             }
+
             return unlockedLevels;
         }
-        
+
         /// <summary>
         /// Checks if a specific level is unlocked.
         /// </summary>
@@ -241,9 +246,10 @@ namespace GameTemplate.Runtime.Core
             {
                 return GameManager.Instance.PlayerData.IsLevelUnlocked(levelId);
             }
+
             return false;
         }
-        
+
         /// <summary>
         /// Manually unlocks a level.
         /// </summary>
@@ -253,15 +259,15 @@ namespace GameTemplate.Runtime.Core
             if (GameManager.Instance?.PlayerData != null)
             {
                 GameManager.Instance.PlayerData.UnlockLevel(levelId);
-                
+
                 // Trigger level unlocked event
-                OnLevelUnlocked?.Invoke(this, levelId);
+                OnLevelUnlocked?.Invoke(levelId);
                 LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelUnlocked, levelId);
-                
+
                 Debug.Log($"Level {levelId} manually unlocked!");
             }
         }
-        
+
         /// <summary>
         /// Manually unlocks multiple levels.
         /// </summary>
@@ -276,19 +282,19 @@ namespace GameTemplate.Runtime.Core
                 }
             }
         }
-        
+
         #region Coroutines
-        
+
         private IEnumerator StartLevelManagerCoroutine()
         {
             _isLoading = true;
-            
+
             // Get the level to start from player data or default to first unlocked level
             int levelToStart = 0;
             if (GameManager.Instance != null && GameManager.Instance.PlayerData != null)
             {
                 levelToStart = GameManager.Instance.PlayerData.CurrentLevelId;
-                
+
                 // Ensure the level is unlocked
                 if (!IsLevelUnlocked(levelToStart))
                 {
@@ -300,19 +306,19 @@ namespace GameTemplate.Runtime.Core
                     }
                 }
             }
-            
+
             yield return StartCoroutine(StartLevelCoroutine(levelToStart));
-            
+
             _isLoading = false;
         }
-        
+
         private IEnumerator StartLevelCoroutine(int levelId)
         {
             _isLoading = true;
-            
+
             // Clean up current level
             yield return StartCoroutine(CleanupCurrentLevel());
-            
+
             // Load level data
             var levelData = levelDataCollection.GetLevelById(levelId);
             if (levelData == null)
@@ -321,23 +327,23 @@ namespace GameTemplate.Runtime.Core
                 _isLoading = false;
                 yield break;
             }
-            
+
             // Create new level
-            
-            
+
+
             _isLoading = false;
         }
-        
+
         private IEnumerator ReloadLevelCoroutine()
         {
             _isTransitioning = true;
-            
+
             // Wait for transition delay
             yield return new WaitForSeconds(levelTransitionDelay);
-            
+
             // Clean up current level
             yield return StartCoroutine(CleanupCurrentLevel());
-            
+
             // Create new level with same data
             var levelTask = levelLoader.LoadLevel(CurrentLevelData, levelContainer);
             // wait for level to load
@@ -346,28 +352,27 @@ namespace GameTemplate.Runtime.Core
             if (level)
             {
                 CurrentLevel = level;
-                    
+
                 // Subscribe to level events
                 SubscribeToLevelEvents(CurrentLevel);
-                    
+
                 // Trigger level reloaded event
-                OnLevelReloaded?.Invoke(this, CurrentLevel);
+                OnLevelReloaded?.Invoke(CurrentLevel);
                 LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelStarted, CurrentLevelData.LevelId);
-                    
+
                 Debug.Log($"Reloaded level: {CurrentLevelData.LevelName}");
             }
-            
+
             _isTransitioning = false;
-            
         }
-        
+
         private IEnumerator CleanupCurrentLevel()
         {
             if (CurrentLevel != null)
             {
                 // Unsubscribe from events
                 UnsubscribeFromLevelEvents(CurrentLevel);
-                
+
                 // Destroy the level
                 if (Application.isPlaying)
                 {
@@ -377,42 +382,42 @@ namespace GameTemplate.Runtime.Core
                 {
                     DestroyImmediate(CurrentLevel.gameObject);
                 }
-                
+
                 CurrentLevel = null;
             }
-            
+
             yield return null;
         }
-        
+
         #endregion
-        
+
         #region Event Handlers
-        
+
         private void SubscribeToLevelEvents(Level level)
         {
             if (!level) return;
-            
+
             Level.OnLevelCompleted += HandleLevelCompleted;
             Level.OnLevelFailed += HandleLevelFailed;
         }
-        
+
         private void UnsubscribeFromLevelEvents(Level level)
         {
             if (!level) return;
-            
+
             Level.OnLevelCompleted -= HandleLevelCompleted;
             Level.OnLevelFailed -= HandleLevelFailed;
         }
-        
+
         private void HandleLevelCompleted(Level level)
         {
             if (level != CurrentLevel) return;
-            
+
             // Update player data
             if (GameManager.Instance != null && GameManager.Instance.PlayerData != null)
             {
                 GameManager.Instance.PlayerData.CompleteLevel(CurrentLevelData.LevelId);
-                
+
                 // Check if next level was unlocked
                 var nextLeveId = CurrentLevelData.LevelId + 1;
                 var nextLevelData = levelDataCollection.GetLevelById(nextLeveId);
@@ -420,39 +425,39 @@ namespace GameTemplate.Runtime.Core
                 {
                     // Unlock the next level
                     GameManager.Instance.PlayerData.UnlockLevel(nextLevelData.LevelId);
-                    
+
                     // Trigger level unlocked event
-                    OnLevelUnlocked?.Invoke(this, nextLevelData.LevelId);
+                    OnLevelUnlocked?.Invoke(nextLevelData.LevelId);
                     LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelUnlocked, nextLevelData.LevelId);
-                    
+
                     Debug.Log($"Level {nextLevelData.LevelId} unlocked!");
                 }
             }
-            
+
             // Trigger level completed event
-            OnLevelCompleted?.Invoke(this, level);
+            OnLevelCompleted?.Invoke(level);
             LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelCompleted, CurrentLevelData.LevelId);
-            
+
             Debug.Log($"Level completed: {CurrentLevelData.LevelName}");
         }
-        
+
         private void HandleLevelFailed(Level level)
         {
             if (level != CurrentLevel) return;
-            
+
             // Update player data
             if (GameManager.Instance != null && GameManager.Instance.PlayerData != null)
             {
                 GameManager.Instance.PlayerData.totalGamesLost++;
             }
-            
+
             // Trigger level failed event
-            OnLevelFailed?.Invoke(this, level);
+            OnLevelFailed?.Invoke(level);
             LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelFailed, CurrentLevelData.LevelId);
-            
+
             Debug.Log($"Level failed: {CurrentLevelData.LevelName}");
         }
-        
+
         #endregion
     }
-} 
+}
