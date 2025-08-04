@@ -167,13 +167,12 @@ namespace GameTemplate.Runtime.Core
         /// <summary>
         /// Loads the next level if it's unlocked.
         /// </summary>
-        /// <returns>True if the next level was loaded, false if it's locked</returns>
-        public bool LoadNextLevel()
+        public void LoadNextLevel()
         {
             if (_isLoading || _isTransitioning)
             {
                 Debug.LogWarning("Cannot load next level while loading or transitioning!");
-                return false;
+                return;
             }
 
             var nextLevelIndex = CurrentLevel.LevelData.LevelId + 1;
@@ -186,19 +185,18 @@ namespace GameTemplate.Runtime.Core
                 else
                 {
                     Debug.LogWarning("No more levels available!");
-                    return false; // No next level available
+                    return; // No next level available
                 }
             }
 
             var nextLevelData = levelDataCollection.levels[nextLevelIndex];
             if (nextLevelData != null)
             {
-                return StartLevel(nextLevelData.LevelId);
+                StartLevel(nextLevelData.LevelId);
             }
             else
             {
                 Debug.Log("No next level available!");
-                return false;
             }
         }
 
