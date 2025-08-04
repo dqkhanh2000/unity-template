@@ -95,6 +95,40 @@ namespace GameTemplate.Runtime.Core
             
             Debug.Log($"Level '{levelData.LevelName}' started");
         }
+
+        public virtual void Update()
+        {
+            if (CurrentState == LevelState.Playing)
+            {
+                // Check win/lose conditions
+                if (IsMatchWinCondition())
+                {
+                    CompleteLevel();
+                }
+                else if (IsMatchFailCondition())
+                {
+                    FailLevel();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks if the level meets the win condition.
+        /// </summary>
+        public virtual bool IsMatchWinCondition()
+        {
+            // Override this method in derived classes to implement specific win conditions
+            return false;
+        }
+        
+        /// <summary>
+        /// Checks if the level meets the fail condition.
+        /// </summary>
+        public virtual bool IsMatchFailCondition()
+        {
+            // Override this method in derived classes to implement specific fail conditions
+            return false;
+        }
         
         /// <summary>
         /// Completes the level successfully.
