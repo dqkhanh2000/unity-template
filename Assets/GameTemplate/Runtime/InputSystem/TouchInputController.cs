@@ -1,7 +1,5 @@
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
-
 namespace GameTemplate.Runtime.InputSystem
 {
     public class TouchInputController : MonoBehaviour
@@ -60,7 +58,7 @@ namespace GameTemplate.Runtime.InputSystem
                 foreach (var touch in Input.touches)
                 {
                     if (touch.phase == TouchPhase.Began &&
-                        !EventSystem.current.IsPointerOverGameObject(-(touch.fingerId + 1)))
+                        !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject(-(touch.fingerId + 1)))
                     {
                         hasValidTouch = true;
                         validTouchFingerId = touch.fingerId;
