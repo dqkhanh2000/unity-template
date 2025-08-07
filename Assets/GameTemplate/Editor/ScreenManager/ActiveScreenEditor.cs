@@ -3,9 +3,9 @@ using GameTemplate.Runtime.ScreenManager;
 using UnityEditor;
 using UnityEngine;
 
-namespace GameTemplate.Runtime.ScreenManager.Editor
+namespace GameTemplate.Editor.ScreenManager
 {
-    [CustomEditor(typeof(ActiveScreen))]
+    [UnityEditor.CustomEditor(typeof(ActiveScreen))]
     public class ActiveScreenEditor : UnityEditor.Editor
     {
         private SerializedProperty key;
