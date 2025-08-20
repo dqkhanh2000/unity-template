@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = System.Object;
 
 namespace GameTemplate.Runtime.Core
 {
@@ -30,6 +31,9 @@ namespace GameTemplate.Runtime.Core
         public bool vibrationEnabled = true;
         public bool musicEnabled = true;
         public bool sfxEnabled = true;
+        
+        [Header("Additional Data")]
+        public Dictionary<string, Object> AdditionalData = new Dictionary<string, Object>();
         
         [Header("Meta")]
         public string lastSaveDate = "";
@@ -183,6 +187,35 @@ namespace GameTemplate.Runtime.Core
                 return $"{minutes}m {seconds}s";
             return $"{seconds}s";
         }
+
+        #region additional data
+        
+        /// <summary>
+        /// Sets the additional data dictionary.
+        /// </summary>
+        /// <param name="key">The key of dictionary</param>
+        /// <param name="value">The value of dictionary</param>
+        public void SetAdditionalData(string key, Object value)
+        {
+            if (AdditionalData.ContainsKey(key))
+            {
+                AdditionalData[key] = value;
+            }
+            else
+            {
+                AdditionalData.Add(key, value);
+            }
+        }
+        /// <summary>
+        /// Gets the additional data dictionary.
+        /// </summary>
+        /// <param name="key">The key of dictionary</param>
+        public Object GetAdditionalData(string key)
+        {
+            return AdditionalData.GetValueOrDefault(key);
+        }
+
+        #endregion
         
         #region Settings Methods
         
