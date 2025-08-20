@@ -33,7 +33,7 @@ namespace GameTemplate.Runtime.Core
         public bool sfxEnabled = true;
         
         [Header("Additional Data")]
-        public Dictionary<string, Object> AdditionalData = new Dictionary<string, Object>();
+        public Dictionary<string, Object> additionalData = new Dictionary<string, Object>();
         
         [Header("Meta")]
         public string lastSaveDate = "";
@@ -71,6 +71,8 @@ namespace GameTemplate.Runtime.Core
         /// Gets all unlocked level IDs.
         /// </summary>
         public List<int> UnlockedLevelIds => new List<int>(unlockedLevelIds);
+        
+        public Dictionary<string, Object> AdditionalData => additionalData;
         
         /// <summary>
         /// Checks if a specific level is completed.
@@ -197,13 +199,13 @@ namespace GameTemplate.Runtime.Core
         /// <param name="value">The value of dictionary</param>
         public void SetAdditionalData(string key, Object value)
         {
-            if (AdditionalData.ContainsKey(key))
+            if (additionalData.ContainsKey(key))
             {
-                AdditionalData[key] = value;
+                additionalData[key] = value;
             }
             else
             {
-                AdditionalData.Add(key, value);
+                additionalData.Add(key, value);
             }
         }
         /// <summary>
@@ -212,7 +214,7 @@ namespace GameTemplate.Runtime.Core
         /// <param name="key">The key of dictionary</param>
         public Object GetAdditionalData(string key)
         {
-            return AdditionalData.GetValueOrDefault(key);
+            return additionalData.GetValueOrDefault(key);
         }
 
         #endregion
