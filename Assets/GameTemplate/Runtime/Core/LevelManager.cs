@@ -461,6 +461,8 @@ namespace GameTemplate.Runtime.Core
 
                 // Check if next level was unlocked
                 var nextLeveId = CurrentLevelData.LevelId + 1;
+                GameManager.Instance.PlayerData.SetCurrentLevel(nextLeveId);
+                GameManager.Instance.SaveGame();
                 var nextLevelData = levelDataCollection.GetLevelById(nextLeveId);
                 if (nextLevelData != null && !GameManager.Instance.PlayerData.IsLevelUnlocked(nextLevelData.LevelId))
                 {
