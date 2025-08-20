@@ -1,4 +1,5 @@
 using System;
+using Unity.Plastic.Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -248,7 +249,7 @@ namespace GameTemplate.Runtime.Core
                 playerData.UpdateSaveDate();
                 
                 // Save to PlayerPrefs
-                var json = JsonUtility.ToJson(playerData, true);
+                var json = JsonConvert.SerializeObject(playerData, Formatting.Indented);
                 PlayerPrefs.SetString("PlayerData", json);
                 PlayerPrefs.Save();
                 
@@ -275,7 +276,7 @@ namespace GameTemplate.Runtime.Core
                 if (PlayerPrefs.HasKey("PlayerData"))
                 {
                     var json = PlayerPrefs.GetString("PlayerData");
-                    playerData = JsonUtility.FromJson<PlayerData>(json);
+                    playerData = JsonConvert.DeserializeObject<PlayerData>(json);
                     
                     // Trigger game loaded event
                     onGameLoaded?.Invoke();
