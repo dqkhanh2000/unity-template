@@ -23,8 +23,8 @@ namespace GameTemplate.Runtime.HiddenMenu
         {
             PopulateLevelDropdown();
             btnClose.onClick.AddListener(CloseMenu);
-            btnClearPlayerData.onClick.AddListener(ClearPlayerData);
-            btnSetLevel.onClick.AddListener(SetPlayerLevel);
+            btnClearPlayerData.onClick.AddListener(HiddenMenuManager.Instance.ClearPlayerData);
+            btnSetLevel.onClick.AddListener(() => HiddenMenuManager.Instance.SetPlayerLevel(selectedLevel));
             btnAddCoins.onClick.AddListener(AddCoins);
             btnAddGems.onClick.AddListener(AddGems);
             btnAddDiamonds.onClick.AddListener(AddDiamonds);
@@ -99,20 +99,7 @@ namespace GameTemplate.Runtime.HiddenMenu
             Destroy(gameObject);
         }
         
-        void ClearPlayerData()
-        {
-            GameManager.Instance.ClearAllData();
-        }
         
-        void SetPlayerLevel()
-        {
-            if (!LevelManager.Instance.IsLevelUnlocked(selectedLevel.levelId))
-            {
-                LevelManager.Instance.UnlockLevel(selectedLevel.levelId);
-            }
-
-            LevelManager.Instance.StartLevel(selectedLevel.levelId);
-        }
         
         void AddCoins()
         {

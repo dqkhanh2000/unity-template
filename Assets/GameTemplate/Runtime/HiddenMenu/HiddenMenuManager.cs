@@ -3,6 +3,7 @@ using UnityEngine;
 using GameTemplate.Runtime.Core;
 using GameTemplate.Runtime.EventSystem;
 using GameTemplate.Runtime.EventSystem.Implements;
+using UnityEngine.Events;
 
 namespace GameTemplate.Runtime.HiddenMenu
 {
@@ -15,6 +16,8 @@ namespace GameTemplate.Runtime.HiddenMenu
         
         [Header("Debug")]
         [SerializeField] private bool showDebugLogs = true;
+
+        public UnityEvent<Level> OnLevelLoaded;
         
         private int clickCount = 0;
         private float lastClickTime = 0f;
@@ -164,6 +167,28 @@ namespace GameTemplate.Runtime.HiddenMenu
         {
             if (Instance == this)
                 Instance = null;
+        }
+        
+        public void ClearPlayerData()
+        {
+            GameManager.Instance.ClearAllData();
+        }
+        
+        public void SetPlayerLevel(LevelData selectedLevel)
+        {
+            if (!LevelManager.Instance.IsLevelUnlocked(selectedLevel.levelId))
+            {
+                LevelManager.Instance.UnlockLevel(selectedLevel.levelId);
+            }
+            
+            LevelManager.Instance.OnLevelStarted.AddListener(LevelLoaded);
+            LevelManager.Instance.StartLevel(selectedLevel.levelId);
+        }
+        
+        private void LevelLoaded(Level level)
+        {
+            LevelManager.Instance.OnLevelStarted.RemoveListener(LevelLoaded);
+            LogDebug($"Level {level.LevelData.levelId} loaded via hidden menu.");
         }
     }
 } 
