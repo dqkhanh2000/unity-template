@@ -1,4 +1,5 @@
 using System;
+using GameTemplate.Runtime.Core.Currencies;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
@@ -17,6 +18,7 @@ namespace GameTemplate.Runtime.Core
         [SerializeField] private bool autoInitialize = true;
         [SerializeField] private bool autoSaveOnExit = true;
         [SerializeField] private float autoSaveInterval = 30f; // seconds
+        [SerializeField] private ApplicationSettings applicationSettings;
         
         [Header("Game State")]
         [SerializeField] private PlayerData playerData;
@@ -128,6 +130,9 @@ namespace GameTemplate.Runtime.Core
             }
             
             CurrentState = GameState.Initializing;
+            
+            // Load application settings first
+            LoadApplicationSettings();
             
             // Load player data
             LoadPlayerData();
@@ -342,6 +347,35 @@ namespace GameTemplate.Runtime.Core
         
         #region Private Methods
         
+        /// <summary>
+        /// Loads application settings and initializes currency system.
+        /// </summary>
+        private void LoadApplicationSettings()
+        {
+            // Try to find ApplicationSettings in Resources folder if not assigned
+            if (applicationSettings == null)
+            {
+                applicationSettings = Resources.Load<ApplicationSettings>("ApplicationSettings");
+            }
+            
+            // If still null, create default settings
+            if (applicationSettings == null)
+            {
+                Debug.LogWarning("No ApplicationSettings found! Creating default settings.");
+                applicationSettings = ScriptableObject.CreateInstance<ApplicationSettings>();
+            }
+            
+            // Initialize currency system with settings
+            CurrencySystem.Initialize(applicationSettings);
+            
+            // Apply target FPS
+            Application.targetFrameRate = applicationSettings.TargetFPS;
+            
+            Debug.Log($"Application settings loaded - Target FPS: {applicationSettings.TargetFPS}, " +
+                     $"Gem enabled: {applicationSettings.EnableGem}, " +
+                     $"Diamond enabled: {applicationSettings.EnableDiamond}");
+        }
+        
         private void LoadPlayerData()
         {
             LoadGame();
@@ -353,6 +387,13 @@ namespace GameTemplate.Runtime.Core
             {
                 SaveGame();
             }
+        }
+        
+        public void ClearAllData()
+        {
+            PlayerPrefs.DeleteAll();
+            PlayerPrefs.Save();
+            Debug.Log("All player data cleared from PlayerPrefs");
         }
         
         #endregion

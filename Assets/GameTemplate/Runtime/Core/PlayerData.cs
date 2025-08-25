@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GameTemplate.Runtime.Core.Currencies;
 using UnityEngine;
 using Object = System.Object;
 
@@ -23,6 +24,9 @@ namespace GameTemplate.Runtime.Core
         public int totalGamesPlayed = 0;
         public int totalGamesWon = 0;
         public int totalGamesLost = 0;
+        
+        [Header("Currency")]
+        public CurrencyData currency = new();
         
         [Header("Settings")]
         public float masterVolume = 1.0f;
@@ -291,6 +295,105 @@ namespace GameTemplate.Runtime.Core
         public float GetEffectiveSFXVolume()
         {
             return sfxEnabled ? masterVolume * sfxVolume : 0f;
+        }
+        
+        #endregion
+        
+        #region Currency Methods
+        
+        /// <summary>
+        /// Gets the currency data.
+        /// </summary>
+        /// <returns>Currency data instance</returns>
+        public CurrencyData GetCurrency() => currency;
+        
+        /// <summary>
+        /// Adds coin to player's currency.
+        /// </summary>
+        /// <param name="amount">Amount of coin to add</param>
+        public void AddCoin(int amount)
+        {
+            currency.AddCoin(amount);
+        }
+        
+        /// <summary>
+        /// Adds gem to player's currency.
+        /// </summary>
+        /// <param name="amount">Amount of gem to add</param>
+        public void AddGem(int amount)
+        {
+            currency.AddGem(amount);
+        }
+        
+        /// <summary>
+        /// Adds diamond to player's currency.
+        /// </summary>
+        /// <param name="amount">Amount of diamond to add</param>
+        public void AddDiamond(int amount)
+        {
+            currency.AddDiamond(amount);
+        }
+        
+        /// <summary>
+        /// Spends coin from player's currency.
+        /// </summary>
+        /// <param name="amount">Amount of coin to spend</param>
+        /// <returns>True if successful, false if insufficient funds</returns>
+        public bool SpendCoin(int amount)
+        {
+            return currency.SpendCoin(amount);
+        }
+        
+        /// <summary>
+        /// Spends gem from player's currency.
+        /// </summary>
+        /// <param name="amount">Amount of gem to spend</param>
+        /// <returns>True if successful, false if insufficient funds</returns>
+        public bool SpendGem(int amount)
+        {
+            return currency.SpendGem(amount);
+        }
+        
+        /// <summary>
+        /// Spends diamond from player's currency.
+        /// </summary>
+        /// <param name="amount">Amount of diamond to spend</param>
+        /// <returns>True if successful, false if insufficient funds</returns>
+        public bool SpendDiamond(int amount)
+        {
+            return currency.SpendDiamond(amount);
+        }
+        
+        /// <summary>
+        /// Checks if player can afford the specified costs.
+        /// </summary>
+        /// <param name="coinCost">Coin cost</param>
+        /// <param name="gemCost">Gem cost (optional)</param>
+        /// <param name="diamondCost">Diamond cost (optional)</param>
+        /// <returns>True if player can afford, false otherwise</returns>
+        public bool CanAfford(int coinCost, int gemCost = 0, int diamondCost = 0)
+        {
+            return currency.CanAfford(coinCost, gemCost, diamondCost);
+        }
+        
+        /// <summary>
+        /// Converts coin to gem.
+        /// </summary>
+        /// <param name="coinAmount">Amount of coin to convert</param>
+        /// <returns>True if conversion successful, false otherwise</returns>
+        public bool ConvertCoinToGem(int coinAmount)
+        {
+            return currency.ConvertCoinToGem(coinAmount);
+        }
+        
+        /// <summary>
+        /// Converts gem to diamond.
+        /// </summary>
+        /// <param name="gemAmount">Amount of gem to convert</param>
+        /// <returns>True if conversion successful, false otherwise</returns>
+        public bool ConvertGemToDiamond(int gemAmount)
+        {
+            return currency.ConvertGemToDiamond(gemAmount);
         }
         
         #endregion
