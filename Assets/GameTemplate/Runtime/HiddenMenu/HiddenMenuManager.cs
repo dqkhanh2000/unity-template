@@ -188,6 +188,7 @@ namespace GameTemplate.Runtime.HiddenMenu
         private void LevelLoaded(Level level)
         {
             LevelManager.Instance.OnLevelStarted.RemoveListener(LevelLoaded);
+            OnLevelLoaded?.Invoke(level);
             LogDebug($"Level {level.LevelData.levelId} loaded via hidden menu.");
         }
     }
