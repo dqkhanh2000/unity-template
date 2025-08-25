@@ -39,6 +39,7 @@ namespace GameTemplate.Runtime.Core
         public float GameTime => Time.time - gameStartTime;
         public bool IsInitialized => CurrentState != GameState.None;
         public bool IsPlaying => CurrentState == GameState.Playing;
+        public ApplicationSettings ApplicationSettings => applicationSettings;
         public bool IsPaused => CurrentState == GameState.Paused;
 
         private GameState _currentState = GameState.None;

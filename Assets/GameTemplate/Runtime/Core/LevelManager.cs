@@ -41,6 +41,8 @@ namespace GameTemplate.Runtime.Core
         public bool IsLoading => _isLoading;
         public bool IsTransitioning => _isTransitioning;
         public bool HasCurrentLevel => CurrentLevel != null;
+        
+        public LevelDataCollection LevelDataCollection => levelDataCollection;
 
         private void Awake()
         {
