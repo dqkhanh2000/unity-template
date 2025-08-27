@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using GameTemplate.Runtime.Core.Attributes;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,11 +21,16 @@ namespace GameTemplate.Runtime.Core
         [SerializeField] private float levelTransitionDelay = 0f;
         [SerializeField] private LevelDataCollection levelDataCollection;
         [SerializeField] private bool isLoopingLevels = false;
+        [ShowIf("isLoopingLevels")]
+        [SerializeField] private int loopFromIndex = 0;
+        [ShowIf("isLoopingLevels")]
+        [SerializeField] private bool changeLevelNameWhenLooping = true;
         [SerializeField] private LevelLoader levelLoader;
 
         // State
         private bool _isLoading = false;
         private bool _isTransitioning = false;
+        private bool _isLoopingLevels = false;
 
         // Events
         
@@ -182,7 +188,8 @@ namespace GameTemplate.Runtime.Core
             {
                 if (isLoopingLevels)
                 {
-                    nextLevelIndex = 0; // Loop back to the first level
+                    nextLevelIndex = loopFromIndex;
+                    isLoopingLevels = true;
                 }
                 else
                 {
@@ -352,6 +359,12 @@ namespace GameTemplate.Runtime.Core
                 yield break;
             }
 
+            if (isLoopingLevels && changeLevelNameWhenLooping)
+            {
+                levelData = levelData.Clone();
+                levelData.levelId = loopFromIndex + (levelId % (levelDataCollection.levels.Length - loopFromIndex));
+                levelData.levelName = "Level " + levelData.levelId;
+            }
             var task = levelLoader.LoadLevel(levelData, levelContainer);
             yield return new WaitUntil(() => task.IsCompleted);
             var level = task.Result;
