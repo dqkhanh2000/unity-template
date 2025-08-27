@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using GameTemplate.Runtime.Core.Currencies;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -240,31 +241,52 @@ namespace GameTemplate.Runtime.Core
         /// <summary>
         /// Saves the current game state.
         /// </summary>
-        public void SaveGame()
+        public async void SaveGame(bool useMultiThread = false)
         {
             if (playerData == null)
             {
                 Debug.LogWarning("No player data to save!");
                 return;
             }
-            
+
             try
             {
                 // Update player data
                 playerData.totalPlayTime += (int)GameTime;
                 playerData.UpdateSaveDate();
-                
-                // Save to PlayerPrefs
-                var json = JsonConvert.SerializeObject(playerData, Formatting.Indented);
-                PlayerPrefs.SetString("PlayerData", json);
-                PlayerPrefs.Save();
-                
-                lastSaveTime = Time.time;
-                
-                // Trigger game saved event
-                onGameSaved?.Invoke();
-                
-                Debug.Log("Game saved successfully");
+
+                if (useMultiThread)
+                {
+                    // Serialize and save on background thread
+                    await Task.Run(() =>
+                    {
+                        var json = JsonConvert.SerializeObject(playerData, Formatting.Indented);
+
+                        // Switch back to main thread for PlayerPrefs operations
+                        UnityMainThreadDispatcher.Instance.Enqueue(() =>
+                        {
+                            PlayerPrefs.SetString("PlayerData", json);
+                            PlayerPrefs.Save();
+
+                            lastSaveTime = Time.time;
+                            onGameSaved?.Invoke();
+
+                            Debug.Log("Game saved successfully (multi-threaded)");
+                        });
+                    });
+                }
+                else
+                {
+                    // Save directly on main thread
+                    var json = JsonConvert.SerializeObject(playerData, Formatting.Indented);
+                    PlayerPrefs.SetString("PlayerData", json);
+                    PlayerPrefs.Save();
+
+                    lastSaveTime = Time.time;
+                    onGameSaved?.Invoke();
+
+                    Debug.Log("Game saved successfully");
+                }
             }
             catch (Exception e)
             {
