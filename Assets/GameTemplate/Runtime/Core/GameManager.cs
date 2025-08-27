@@ -269,11 +269,11 @@ namespace GameTemplate.Runtime.Core
                             PlayerPrefs.Save();
 
                             lastSaveTime = Time.time;
-                            onGameSaved?.Invoke();
 
                             Debug.Log("Game saved successfully (multi-threaded)");
                         });
                     });
+                    onGameSaved?.Invoke();
                 }
                 else
                 {
