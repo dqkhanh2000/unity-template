@@ -15,9 +15,10 @@
         /// Initializes a new instance of the StringEvent struct.
         /// </summary>
         /// <param name="name">The name/identifier of the event.</param>
-        public StringEvent(string name)
+        public StringEvent(string name, object data)
         {
             Name = name;
+            this.data = data;
         }
 
         /// <summary>
@@ -29,15 +30,17 @@
         /// This method is equivalent to calling:
         /// <code>EventManager.TriggerEvent(new StringEvent(name));</code>
         /// </remarks>
-        public static void Trigger(string name)
+        public static void Trigger(string name, object data = null)
         {
-            EventManager.TriggerEvent(new StringEvent(name));
+            EventManager.TriggerEvent(new StringEvent(name, data));
         }
 
         /// <summary>
         /// Gets the name/identifier of this event.
         /// </summary>
         public string Name { get; }
+
+        public object data;
 
         /// <summary>
         /// Gets the unique identifier for this event type.
