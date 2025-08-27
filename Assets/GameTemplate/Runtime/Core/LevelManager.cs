@@ -20,10 +20,10 @@ namespace GameTemplate.Runtime.Core
         [SerializeField] private bool autoStartFirstLevel = true;
         [SerializeField] private float levelTransitionDelay = 0f;
         [SerializeField] private LevelDataCollection levelDataCollection;
-        [SerializeField] private bool isLoopingLevels = false;
-        [ShowIf("isLoopingLevels")]
+        [SerializeField] private bool loopLevel = false;
+        [ShowIf("loopLevel")]
         [SerializeField] private int loopFromIndex = 0;
-        [ShowIf("isLoopingLevels")]
+        [ShowIf("loopLevel")]
         [SerializeField] private bool changeLevelNameWhenLooping = true;
         [SerializeField] private LevelLoader levelLoader;
 
@@ -49,6 +49,7 @@ namespace GameTemplate.Runtime.Core
         public bool HasCurrentLevel => CurrentLevel != null;
         
         public LevelDataCollection LevelDataCollection => levelDataCollection;
+        public bool IsLoopingLevels => _isLoopingLevels;
 
         private void Awake()
         {
@@ -186,27 +187,14 @@ namespace GameTemplate.Runtime.Core
             var nextLevelIndex = CurrentLevel.LevelData.LevelId + 1;
             if (nextLevelIndex > levelDataCollection.levels.Length - 1)
             {
-                if (isLoopingLevels)
-                {
-                    nextLevelIndex = loopFromIndex;
-                    isLoopingLevels = true;
-                }
-                else
+                if (!loopLevel)
                 {
                     Debug.LogWarning("No more levels available!");
                     return; // No next level available
                 }
             }
 
-            var nextLevelData = levelDataCollection.levels[nextLevelIndex];
-            if (nextLevelData != null)
-            {
-                StartLevel(nextLevelData.LevelId);
-            }
-            else
-            {
-                Debug.Log("No next level available!");
-            }
+            StartLevel(nextLevelIndex);
         }
 
         /// <summary>
@@ -223,15 +211,7 @@ namespace GameTemplate.Runtime.Core
             var previousLevelIndex = CurrentLevel.LevelData.LevelId - 1;
             if (previousLevelIndex < 0)
             {
-                if (isLoopingLevels)
-                {
-                    previousLevelIndex = levelDataCollection.levels.Length - 1; // Loop back to the last level
-                }
-                else
-                {
-                    Debug.LogWarning("No previous level available!");
-                    return; // No previous level available
-                }
+                previousLevelIndex = 0;
             }
 
             var previousLevelData = levelDataCollection.levels[previousLevelIndex];
@@ -349,6 +329,29 @@ namespace GameTemplate.Runtime.Core
 
             // Clean up current level
             yield return StartCoroutine(CleanupCurrentLevel());
+            
+            var actualLevelId = levelId;
+            if(levelId >= levelDataCollection.levels.Length)
+            {
+                if (loopLevel)
+                {
+                    _isLoopingLevels = true;
+                    while (levelId >= levelDataCollection.levels.Length)
+                    {
+                        levelId -= (levelDataCollection.levels.Length - loopFromIndex);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("No more levels available!");
+                    _isLoading = false;
+                    yield break; // No next level available
+                }
+            }
+            else
+            {
+                _isLoopingLevels = false;
+            }
 
             // Load level data
             var levelData = levelDataCollection.GetLevelById(levelId);
@@ -359,10 +362,10 @@ namespace GameTemplate.Runtime.Core
                 yield break;
             }
 
-            if (isLoopingLevels && changeLevelNameWhenLooping)
+            if (_isLoopingLevels && changeLevelNameWhenLooping)
             {
                 levelData = levelData.Clone();
-                levelData.levelId = loopFromIndex + (levelId % (levelDataCollection.levels.Length - loopFromIndex));
+                levelData.levelId = actualLevelId;
                 levelData.levelName = "Level " + levelData.levelId;
             }
             var task = levelLoader.LoadLevel(levelData, levelContainer);
