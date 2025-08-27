@@ -261,19 +261,17 @@ namespace GameTemplate.Runtime.Core
                     await Task.Run(() =>
                     {
                         var json = JsonConvert.SerializeObject(playerData, Formatting.Indented);
+                        PlayerPrefs.SetString("PlayerData", json);
+                        PlayerPrefs.Save();
 
                         // Switch back to main thread for PlayerPrefs operations
                         UnityMainThreadDispatcher.Instance.Enqueue(() =>
                         {
-                            PlayerPrefs.SetString("PlayerData", json);
-                            PlayerPrefs.Save();
-
                             lastSaveTime = Time.time;
-
+                            onGameSaved?.Invoke();
                             Debug.Log("Game saved successfully (multi-threaded)");
                         });
                     });
-                    onGameSaved?.Invoke();
                 }
                 else
                 {
