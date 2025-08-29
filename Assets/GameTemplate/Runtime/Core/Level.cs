@@ -12,9 +12,10 @@ namespace GameTemplate.Runtime.Core
         [Header("Level Configuration")]
         [SerializeField] private LevelData levelData;
         [SerializeField] private bool autoInitialize = true;
+        [SerializeField] private bool enableDebugLogs = false;
         
         [Header("Level State")]
-        [SerializeField] private LevelState _currentState = LevelState.NotStarted;
+        [SerializeField] private LevelState _currentState = LevelState.Unknown;
         public LevelState CurrentState
         {
             get => _currentState;
@@ -50,7 +51,7 @@ namespace GameTemplate.Runtime.Core
         
         protected virtual void Start()
         {
-            if (autoInitialize && CurrentState == LevelState.NotStarted)
+            if (autoInitialize && CurrentState == LevelState.Ready)
             {
                 StartLevel();
             }
@@ -73,9 +74,22 @@ namespace GameTemplate.Runtime.Core
                 return;
             }
             
-            CurrentState = LevelState.NotStarted;
+            CurrentState = LevelState.Loading;
             
-            Debug.Log($"Level '{levelData.LevelName}' initialized");
+            PrepareLevel();
+            
+            CurrentState = LevelState.Loaded;
+            
+            Log($"Level '{levelData.LevelName}' initialized");
+        }
+
+        /// <summary>
+        /// Internal method to prepare the level before starting.
+        /// </summary>
+        protected virtual void PrepareLevel()
+        {
+            CurrentState = LevelState.Ready;
+            Log($"Level '{levelData.LevelName}' is ready");
         }
         
         /// <summary>
@@ -83,7 +97,7 @@ namespace GameTemplate.Runtime.Core
         /// </summary>
         public virtual void StartLevel()
         {
-            if (CurrentState != LevelState.NotStarted)
+            if (CurrentState != LevelState.Loaded && CurrentState != LevelState.Ready)
             {
                 Debug.LogWarning("Level is already started or completed!");
                 return;
@@ -93,7 +107,7 @@ namespace GameTemplate.Runtime.Core
             
             OnLevelStarted?.Invoke(this);
             
-            Debug.Log($"Level '{levelData.LevelName}' started");
+            Log($"Level '{levelData.LevelName}' started");
         }
 
         public virtual void Update()
@@ -142,7 +156,7 @@ namespace GameTemplate.Runtime.Core
             
             OnLevelCompleted?.Invoke(this);
             
-            Debug.Log($"Level '{levelData.LevelName}' completed");
+            Log($"Level '{levelData.LevelName}' completed");
         }
         
         /// <summary>
@@ -157,7 +171,7 @@ namespace GameTemplate.Runtime.Core
             
             OnLevelFailed?.Invoke(this);
             
-            Debug.Log($"Level '{levelData.LevelName}' failed");
+            Log($"Level '{levelData.LevelName}' failed");
         }
         
         /// <summary>
@@ -165,11 +179,11 @@ namespace GameTemplate.Runtime.Core
         /// </summary>
         public virtual void RestartLevel()
         {
-            CurrentState = LevelState.NotStarted;
+            CurrentState = LevelState.Loaded;
             
             OnLevelRestarted?.Invoke(this);
             
-            Debug.Log($"Level '{levelData.LevelName}' restarted");
+            Log($"Level '{levelData.LevelName}' restarted");
             
             // Start the level again
             StartLevel();
@@ -201,6 +215,14 @@ namespace GameTemplate.Runtime.Core
         {
             return CurrentState == LevelState.Completed || CurrentState == LevelState.Failed;
         }
+        
+        protected virtual void Log(string message)
+        {
+            if (enableDebugLogs)
+            {
+                Debug.Log(message);
+            }
+        }
     }
     
     /// <summary>
@@ -208,7 +230,10 @@ namespace GameTemplate.Runtime.Core
     /// </summary>
     public enum LevelState
     {
-        NotStarted,
+        Unknown,
+        Loading,
+        Loaded,
+        Ready,
         Playing,
         Completed,
         Failed

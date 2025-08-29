@@ -108,7 +108,7 @@ namespace GameTemplate.Runtime.EventSystem
         private static bool _isProcessingQueue;
         
         // Debug and logging
-        private static bool _enableLogging = true;
+        private static bool _enableLogging = false;
         private static int _totalEventsTriggered;
         private static int _totalListenersNotified;
 

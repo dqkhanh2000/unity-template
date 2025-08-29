@@ -17,9 +17,11 @@ namespace GameTemplate.Runtime.Core
         
         [Header("Game Configuration")]
         [SerializeField] private bool autoInitialize = true;
+        [SerializeField] private bool autoStartLevelManager = false;
         [SerializeField] private bool autoSaveOnExit = true;
         [SerializeField] private float autoSaveInterval = 30f; // seconds
         [SerializeField] private ApplicationSettings applicationSettings;
+        [SerializeField] private bool enableDebugLogs = false;
         
         [Header("Game State")]
         [SerializeField] private PlayerData playerData;
@@ -144,7 +146,7 @@ namespace GameTemplate.Runtime.Core
             // Trigger initialization event
             onGameInitialized?.Invoke();
             
-            Debug.Log("GameManager initialized");
+            Log("initialized");
         }
         
         /// <summary>
@@ -163,14 +165,14 @@ namespace GameTemplate.Runtime.Core
             lastSaveTime = Time.time;
             
             // Start level manager
-            if (LevelManager.Instance != null)
+            if (LevelManager.Instance != null && autoStartLevelManager)
             {
                 LevelManager.Instance.StartLevelManager();
             }
             
             onGameStarted?.Invoke();
             
-            Debug.Log("Game started");
+            Log("Game started");
         }
         
         /// <summary>
@@ -189,7 +191,7 @@ namespace GameTemplate.Runtime.Core
             // Trigger game paused event
             onGamePaused?.Invoke();
             
-            Debug.Log("Game paused");
+            Log("Game paused");
         }
         
         /// <summary>
@@ -208,7 +210,7 @@ namespace GameTemplate.Runtime.Core
             // Trigger game resumed event
             onGameResumed?.Invoke();
             
-            Debug.Log("Game resumed");
+            Log("Game resumed");
         }
         
         /// <summary>
@@ -235,7 +237,7 @@ namespace GameTemplate.Runtime.Core
             // Trigger game ended event
             onGameEnded?.Invoke();
             
-            Debug.Log("Game ended");
+            Log("Game ended");
         }
         
         /// <summary>
@@ -269,7 +271,7 @@ namespace GameTemplate.Runtime.Core
                         {
                             lastSaveTime = Time.time;
                             onGameSaved?.Invoke();
-                            Debug.Log("Game saved successfully (multi-threaded)");
+                            Log("Game saved successfully (multi-threaded)");
                         });
                     });
                 }
@@ -283,7 +285,7 @@ namespace GameTemplate.Runtime.Core
                     lastSaveTime = Time.time;
                     onGameSaved?.Invoke();
 
-                    Debug.Log("Game saved successfully");
+                    Log("Game saved successfully");
                 }
             }
             catch (Exception e)
@@ -307,11 +309,11 @@ namespace GameTemplate.Runtime.Core
                     // Trigger game loaded event
                     onGameLoaded?.Invoke();
                     
-                    Debug.Log("Game loaded successfully");
+                    Log("Game loaded successfully");
                 }
                 else
                 {
-                    Debug.Log("No saved game data found, creating new player data");
+                    Log("No saved game data found, creating new player data");
                     CreateNewPlayerData();
                 }
             }
@@ -344,7 +346,7 @@ namespace GameTemplate.Runtime.Core
             gameStartTime = 0f;
             lastSaveTime = 0f;
             
-            Debug.Log("Game reset to initial state");
+            Log("Game reset to initial state");
         }
         
         /// <summary>
@@ -392,7 +394,7 @@ namespace GameTemplate.Runtime.Core
             // Apply target FPS
             Application.targetFrameRate = applicationSettings.TargetFPS;
             
-            Debug.Log($"Application settings loaded - Target FPS: {applicationSettings.TargetFPS}, " +
+            Log($"Application settings loaded - Target FPS: {applicationSettings.TargetFPS}, " +
                      $"Gem enabled: {applicationSettings.EnableGem}, " +
                      $"Diamond enabled: {applicationSettings.EnableDiamond}");
         }
@@ -414,9 +416,17 @@ namespace GameTemplate.Runtime.Core
         {
             PlayerPrefs.DeleteAll();
             PlayerPrefs.Save();
-            Debug.Log("All player data cleared from PlayerPrefs");
+            Log("All player data cleared from PlayerPrefs");
         }
         
         #endregion
+        
+        private void Log(string message)
+        {
+            if (enableDebugLogs)
+            {
+                Debug.Log($"[GameManager] {message}");
+            }
+        }
     }
 } 

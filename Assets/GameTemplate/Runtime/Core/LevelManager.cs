@@ -26,6 +26,7 @@ namespace GameTemplate.Runtime.Core
         [ShowIf("loopLevel")]
         [SerializeField] private bool changeLevelNameWhenLooping = true;
         [SerializeField] private LevelLoader levelLoader;
+        [SerializeField] private bool debugLogs = false;
 
         // State
         private bool _isLoading = false;
@@ -108,7 +109,7 @@ namespace GameTemplate.Runtime.Core
                 OnLevelManagerInitializing?.Invoke();
             }
 
-            Debug.Log("LevelManager initialized");
+            Log("initialized");
         }
 
         /// <summary>
@@ -221,7 +222,7 @@ namespace GameTemplate.Runtime.Core
             }
             else
             {
-                Debug.Log("No previous level available!");
+                Log("No previous level available!");
             }
         }
 
@@ -275,7 +276,7 @@ namespace GameTemplate.Runtime.Core
                 OnLevelUnlocked?.Invoke(levelId);
                 LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelUnlocked, levelId);
 
-                Debug.Log($"Level {levelId} manually unlocked!");
+                Log($"Level {levelId} manually unlocked!");
             }
         }
 
@@ -383,7 +384,7 @@ namespace GameTemplate.Runtime.Core
                 OnLevelStarted?.Invoke(CurrentLevel);
                 LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelStarted, CurrentLevelData.LevelId);
 
-                Debug.Log($"Started level: {CurrentLevelData.LevelName}");
+                Log($"Started level: {CurrentLevelData.LevelName}");
             }
             else
             {
@@ -419,7 +420,7 @@ namespace GameTemplate.Runtime.Core
                 OnLevelReloaded?.Invoke(CurrentLevel);
                 LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelStarted, CurrentLevelData.LevelId);
 
-                Debug.Log($"Reloaded level: {CurrentLevelData.LevelName}");
+                Log($"Reloaded level: {CurrentLevelData.LevelName}");
             }
 
             _isTransitioning = false;
@@ -491,7 +492,7 @@ namespace GameTemplate.Runtime.Core
                     OnLevelUnlocked?.Invoke(nextLevelData.LevelId);
                     LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelUnlocked, nextLevelData.LevelId);
 
-                    Debug.Log($"Level {nextLevelData.LevelId} unlocked!");
+                    Log($"Level {nextLevelData.LevelId} unlocked!");
                 }
             }
 
@@ -499,7 +500,7 @@ namespace GameTemplate.Runtime.Core
             OnLevelCompleted?.Invoke(level);
             LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelCompleted, CurrentLevelData.LevelId);
 
-            Debug.Log($"Level completed: {CurrentLevelData.LevelName}");
+            Log($"Level completed: {CurrentLevelData.LevelName}");
         }
 
         private void HandleLevelFailed(Level level)
@@ -516,9 +517,17 @@ namespace GameTemplate.Runtime.Core
             OnLevelFailed?.Invoke(level);
             LevelManagerEvent.Trigger(LevelManagerEvent.EventType.LevelFailed, CurrentLevelData.LevelId);
 
-            Debug.Log($"Level failed: {CurrentLevelData.LevelName}");
+            Log($"Level failed: {CurrentLevelData.LevelName}");
         }
 
         #endregion
+        
+        private void Log(string message)
+        {
+            if (debugLogs)
+            {
+                Debug.Log($"[LevelManager] {message}");
+            }
+        }
     }
 }
