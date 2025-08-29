@@ -7,6 +7,7 @@
         Initialized,
         Loading,
         Loaded,
+        Tutorial,
         Playing,
         Paused,
         GameOver,
