@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace GameTemplate.Runtime.Core
 {
@@ -10,12 +11,24 @@ namespace GameTemplate.Runtime.Core
     public class Level : MonoBehaviour
     {
         [Header("Level Configuration")]
-        [SerializeField] private LevelData levelData;
-        [SerializeField] private bool autoInitialize = true;
-        [SerializeField] private bool enableDebugLogs = false;
+        [SerializeField] protected LevelData levelData;
+        [SerializeField] protected bool autoInitialize = true;
+        [SerializeField] protected bool enableDebugLogs = false;
         
         [Header("Level State")]
-        [SerializeField] private LevelState _currentState = LevelState.Unknown;
+        [SerializeField] protected LevelState _currentState = LevelState.Unknown;
+        
+        // Events
+        public UnityEvent<Level> OnLevelStarted;
+        public UnityEvent<Level> OnLevelCompleted;
+        public UnityEvent<Level> OnLevelFailed;
+        public UnityEvent<Level> OnLevelRestarted;
+        
+        // Properties
+        public LevelData LevelData => levelData;
+        
+        public bool IsActive => CurrentState == LevelState.Playing;
+        
         public LevelState CurrentState
         {
             get => _currentState;
@@ -29,17 +42,6 @@ namespace GameTemplate.Runtime.Core
                 }
             }
         }
-        
-        // Events
-        public static event Action<Level> OnLevelStarted;
-        public static event Action<Level> OnLevelCompleted;
-        public static event Action<Level> OnLevelFailed;
-        public static event Action<Level> OnLevelRestarted;
-        
-        // Properties
-        public LevelData LevelData => levelData;
-        
-        public bool IsActive => CurrentState == LevelState.Playing;
         
         protected virtual void Awake()
         {
@@ -123,7 +125,16 @@ namespace GameTemplate.Runtime.Core
                 {
                     FailLevel();
                 }
+                else
+                {
+                    LevelUpdate();
+                }
             }
+        }
+        
+        protected virtual void LevelUpdate()
+        {
+            // Override in derived classes for per-frame updates
         }
 
         /// <summary>

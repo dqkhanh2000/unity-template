@@ -379,6 +379,7 @@ namespace GameTemplate.Runtime.Core
 
                 // Subscribe to level events
                 SubscribeToLevelEvents(CurrentLevel);
+                level.StartLevel();
 
                 // Trigger level started event
                 OnLevelStarted?.Invoke(CurrentLevel);
@@ -415,6 +416,8 @@ namespace GameTemplate.Runtime.Core
 
                 // Subscribe to level events
                 SubscribeToLevelEvents(CurrentLevel);
+                
+                level.StartLevel();
 
                 // Trigger level reloaded event
                 OnLevelReloaded?.Invoke(CurrentLevel);
@@ -457,16 +460,16 @@ namespace GameTemplate.Runtime.Core
         {
             if (!level) return;
 
-            Level.OnLevelCompleted += HandleLevelCompleted;
-            Level.OnLevelFailed += HandleLevelFailed;
+           level.OnLevelCompleted.AddListener(HandleLevelCompleted);
+           level.OnLevelFailed.AddListener(HandleLevelFailed);
         }
 
         private void UnsubscribeFromLevelEvents(Level level)
         {
             if (!level) return;
-
-            Level.OnLevelCompleted -= HandleLevelCompleted;
-            Level.OnLevelFailed -= HandleLevelFailed;
+            
+            level.OnLevelCompleted.RemoveListener(HandleLevelCompleted);
+            level.OnLevelFailed.RemoveListener(HandleLevelFailed);
         }
 
         private void HandleLevelCompleted(Level level)
