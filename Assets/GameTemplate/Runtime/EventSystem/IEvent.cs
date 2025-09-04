@@ -19,11 +19,5 @@
         /// Used for debugging, logging, and event validation.
         /// </summary>
         string EventId { get; }
-        
-        /// <summary>
-        /// Gets whether this event is valid and can be processed.
-        /// Used to validate event data before processing.
-        /// </summary>
-        bool IsValid { get; }
     }
 }

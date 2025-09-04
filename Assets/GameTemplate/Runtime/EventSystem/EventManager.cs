@@ -269,11 +269,6 @@ namespace GameTemplate.Runtime.EventSystem
         /// </remarks>
         public static void TriggerEvent<T>(T eventRaiser) where T : struct, IEvent
         {
-            if (!eventRaiser.IsValid)
-            {
-                Debug.LogWarning($"[EventManager] Attempted to trigger invalid event of type {typeof(T).Name}");
-                return;
-            }
 
             lock (_lock)
             {
