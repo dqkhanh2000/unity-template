@@ -29,6 +29,7 @@ namespace GameTemplate.Runtime.Core
         
         public bool IsActive => CurrentState == LevelState.Playing;
         
+        
         public LevelState CurrentState
         {
             get => _currentState;

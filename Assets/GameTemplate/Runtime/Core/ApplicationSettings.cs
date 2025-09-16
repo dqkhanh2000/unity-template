@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace GameTemplate.Runtime.Core
 {
-    [CreateAssetMenu(fileName = "ApplicationSettings", menuName = "Game Template/Application Settings")]
+    [CreateAssetMenu(fileName = "ApplicationSettings", menuName = "GameTemplate/Application Settings")]
     public class ApplicationSettings : ScriptableObject
     {
         [Header("Performance Settings")]

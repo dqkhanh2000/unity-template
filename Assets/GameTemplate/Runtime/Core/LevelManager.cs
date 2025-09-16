@@ -367,7 +367,6 @@ namespace GameTemplate.Runtime.Core
             {
                 levelData = levelData.Clone();
                 levelData.levelId = actualLevelId;
-                levelData.levelName = "Level " + levelData.levelId;
             }
             var task = levelLoader.LoadLevel(levelData, levelContainer);
             yield return new WaitUntil(() => task.IsCompleted);

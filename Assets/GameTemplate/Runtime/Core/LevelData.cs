@@ -9,29 +9,25 @@ namespace GameTemplate.Runtime.Core
     /// Supports both Resources and Addressables loading methods.
     /// </summary>
     [Serializable]
-    public class LevelData
+    public class LevelData : ScriptableObject
     {
         [Header("Basic Information")]
         public int levelId;
-        public string levelName;
-
-        [Space(10)]
-        [InfoBox("May be json file or prefab or anything else", InfoBoxType.Info, false)]
-        public UnityEngine.Object levelObject;
         
         /// <summary>
         /// Creates a new LevelData instance with basic information.
         /// </summary>
         /// <param name="id">Level ID (index)</param>
-        /// <param name="name">Level name</param>
-        /// <param name="address">Addressable address for the level data</param>
-        /// <param name="resourcePath">Resource path as fallback</param>
-        public LevelData(int id, string name, string address = "", string resourcePath = "")
+        public LevelData(int id)
         {
             levelId = id;
-            levelName = name;
         }
-        
+
+        protected LevelData()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Gets the level ID.
         /// </summary>
@@ -40,13 +36,14 @@ namespace GameTemplate.Runtime.Core
         /// <summary>
         /// Gets the level name.
         /// </summary>
-        public string LevelName => levelName;
+        public virtual string LevelName => $"Level {levelId}";
+        
         
         /// <summary>
         /// Serializes the level data to JSON.
         /// </summary>
         /// <returns>JSON string representation of the level data</returns>
-        public string ToJson()
+        public virtual string ToJson()
         {
             return JsonUtility.ToJson(this, true);
         }
@@ -56,7 +53,7 @@ namespace GameTemplate.Runtime.Core
         /// </summary>
         /// <param name="json">JSON string to deserialize</param>
         /// <returns>LevelData instance</returns>
-        public static LevelData FromJson(string json)
+        public virtual LevelData FromJson(string json)
         {
             return JsonUtility.FromJson<LevelData>(json);
         }
@@ -65,7 +62,7 @@ namespace GameTemplate.Runtime.Core
         /// Creates a copy of this level data.
         /// </summary>
         /// <returns>A new LevelData instance with the same values</returns>
-        public LevelData Clone()
+        public virtual LevelData Clone()
         {
             return FromJson(ToJson());
         }

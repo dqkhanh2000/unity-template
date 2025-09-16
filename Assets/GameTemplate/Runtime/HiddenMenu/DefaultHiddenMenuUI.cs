@@ -79,7 +79,7 @@ namespace GameTemplate.Runtime.HiddenMenu
             levelDropdown.options.Clear();
             foreach (var level in LevelManager.Instance.LevelDataCollection.levels)
             {
-                levelDropdown.options.Add(new TMP_Dropdown.OptionData(level.levelName));
+                levelDropdown.options.Add(new TMP_Dropdown.OptionData(level.LevelName));
             }
             
             int currentLevelIndex = levelDropdown.options.FindIndex(option => option.text == selectedLevel.LevelName);
