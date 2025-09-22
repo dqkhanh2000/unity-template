@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace GameTemplate.Runtime.EventSystem
@@ -379,7 +380,12 @@ namespace GameTemplate.Runtime.EventSystem
                 }
                 catch (Exception ex)
                 {
-                    Debug.LogError($"[EventManager] Error in listener {listener.GetType().Name}: {ex.Message}");
+                    if(ex is TargetInvocationException tie && tie.InnerException != null)
+                    {
+                        ex = tie.InnerException;
+                    }
+                    Debug.LogError($"[EventManager] Error notifying listener {listener.GetType().Name} for event {eventType.Name}: {ex}");
+                    Debug.LogException(ex);
                 }
             }
         }
