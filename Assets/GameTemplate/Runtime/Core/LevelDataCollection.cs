@@ -53,8 +53,9 @@ namespace GameTemplate.Runtime.Core
                 if (level != null && level.LevelId == levelId)
                     return level;
             }
-            
-            return null;
+
+            // ìf not found, return by level index
+            return levels.Length > levelId ? levels[levelId] : null;
         }
         
         /// <summary>

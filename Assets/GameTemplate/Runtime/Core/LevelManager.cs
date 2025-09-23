@@ -21,10 +21,8 @@ namespace GameTemplate.Runtime.Core
         [SerializeField] private float levelTransitionDelay = 0f;
         [SerializeField] private LevelDataCollection levelDataCollection;
         [SerializeField] private bool loopLevel = false;
-        [ShowIf("loopLevel")]
-        [SerializeField] private int loopFromIndex = 0;
-        [ShowIf("loopLevel")]
-        [SerializeField] private bool changeLevelNameWhenLooping = true;
+        [ShowIf("loopLevel")] [SerializeField] private int loopFromIndex = 0;
+        [ShowIf("loopLevel")] [SerializeField] private bool changeLevelNameWhenLooping = true;
         [SerializeField] private LevelLoader levelLoader;
         [SerializeField] private bool debugLogs = false;
 
@@ -34,7 +32,7 @@ namespace GameTemplate.Runtime.Core
         private bool _isLoopingLevels = false;
 
         // Events
-        
+
         public UnityEvent OnLevelManagerInitializing;
         public UnityEvent OnLevelManagerInitialized;
         public UnityEvent<Level> OnLevelStarted;
@@ -48,7 +46,7 @@ namespace GameTemplate.Runtime.Core
         public bool IsLoading => _isLoading;
         public bool IsTransitioning => _isTransitioning;
         public bool HasCurrentLevel => CurrentLevel != null;
-        
+
         public LevelDataCollection LevelDataCollection => levelDataCollection;
         public bool IsLoopingLevels => _isLoopingLevels;
 
@@ -92,22 +90,19 @@ namespace GameTemplate.Runtime.Core
                 Debug.LogError("LevelDataCollection is not assigned in LevelManager!");
                 return;
             }
-            
+
             if (levelLoader == null)
             {
                 Debug.LogError("LevelLoader is not assigned in LevelManager!");
                 return;
             }
-            
-            if(autoStartFirstLevel)
+
+            if (autoStartFirstLevel)
             {
                 StartLevelManager();
-                OnLevelManagerInitialized?.Invoke();
             }
-            else
-            {
-                OnLevelManagerInitializing?.Invoke();
-            }
+
+            OnLevelManagerInitialized?.Invoke();
 
             Log("initialized");
         }
@@ -330,9 +325,9 @@ namespace GameTemplate.Runtime.Core
 
             // Clean up current level
             yield return StartCoroutine(CleanupCurrentLevel());
-            
+
             var actualLevelId = levelId;
-            if(levelId >= levelDataCollection.levels.Length)
+            if (levelId >= levelDataCollection.levels.Length)
             {
                 if (loopLevel)
                 {
@@ -368,6 +363,7 @@ namespace GameTemplate.Runtime.Core
                 levelData = levelData.Clone();
                 levelData.levelId = actualLevelId;
             }
+
             var task = levelLoader.LoadLevel(levelData, levelContainer);
             yield return new WaitUntil(() => task.IsCompleted);
             var level = task.Result;
@@ -415,7 +411,7 @@ namespace GameTemplate.Runtime.Core
 
                 // Subscribe to level events
                 SubscribeToLevelEvents(CurrentLevel);
-                
+
                 level.StartLevel();
 
                 // Trigger level reloaded event
@@ -459,14 +455,14 @@ namespace GameTemplate.Runtime.Core
         {
             if (!level) return;
 
-           level.OnLevelCompleted.AddListener(HandleLevelCompleted);
-           level.OnLevelFailed.AddListener(HandleLevelFailed);
+            level.OnLevelCompleted.AddListener(HandleLevelCompleted);
+            level.OnLevelFailed.AddListener(HandleLevelFailed);
         }
 
         private void UnsubscribeFromLevelEvents(Level level)
         {
             if (!level) return;
-            
+
             level.OnLevelCompleted.RemoveListener(HandleLevelCompleted);
             level.OnLevelFailed.RemoveListener(HandleLevelFailed);
         }
@@ -523,7 +519,7 @@ namespace GameTemplate.Runtime.Core
         }
 
         #endregion
-        
+
         private void Log(string message)
         {
             if (debugLogs)
