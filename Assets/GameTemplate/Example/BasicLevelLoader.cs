@@ -9,7 +9,7 @@ namespace GameTemplate.Example
         public override Task<Level> LoadLevel(LevelData levelData, Transform levelContainer = null)
         {
             // Create a new Level instance
-            Level level = new GameObject("Level_" + levelData.levelName).AddComponent<Level>();
+            Level level = new GameObject("Level_" + levelData.LevelName).AddComponent<Level>();
 
             level.transform.parent = levelContainer;
             level.Initialize(levelData);

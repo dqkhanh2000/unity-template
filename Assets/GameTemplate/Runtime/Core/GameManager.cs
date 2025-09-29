@@ -20,6 +20,7 @@ namespace GameTemplate.Runtime.Core
         [SerializeField] private bool autoStartLevelManager = false;
         [SerializeField] private bool autoSaveOnExit = true;
         [SerializeField] private float autoSaveInterval = 30f; // seconds
+        [SerializeField] private bool allowSaveGame = true;
         [SerializeField] private ApplicationSettings applicationSettings;
         [SerializeField] private bool enableDebugLogs = false;
         
@@ -245,6 +246,12 @@ namespace GameTemplate.Runtime.Core
         /// </summary>
         public async void SaveGame(bool useMultiThread = false)
         {
+            if (!allowSaveGame)
+            {
+                Debug.LogWarning("Saving game is disabled!");
+                return;
+            }
+            
             if (playerData == null)
             {
                 Debug.LogWarning("No player data to save!");
