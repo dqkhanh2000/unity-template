@@ -337,6 +337,7 @@ namespace GameTemplate.Runtime.Core
         public void CreateNewPlayerData()
         {
             playerData = new PlayerData();
+            playerData.InitializeDefaults();
             SaveGame();
         }
         

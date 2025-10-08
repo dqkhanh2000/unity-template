@@ -42,18 +42,19 @@ namespace GameTemplate.Runtime.Core
         [Header("Meta")]
         public string lastSaveDate = "";
         public string gameVersion = "1.0.0";
-        
+
         /// <summary>
         /// Creates a new PlayerData instance with default values.
         /// </summary>
         public PlayerData()
         {
             lastSaveDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            // Ensure first level is unlocked
+        }
+
+        public void InitializeDefaults()
+        {
             if (!unlockedLevelIds.Contains(0))
-            {
                 unlockedLevelIds.Add(0);
-            }
         }
         
         /// <summary>
