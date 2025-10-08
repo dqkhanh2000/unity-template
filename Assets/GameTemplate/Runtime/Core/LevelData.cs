@@ -25,7 +25,7 @@ namespace GameTemplate.Runtime.Core
 
         protected LevelData()
         {
-            throw new NotImplementedException();
+            
         }
 
         /// <summary>
