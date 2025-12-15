@@ -49,7 +49,7 @@ namespace GameTemplate.Editor
             DrawClassInfoBoxes();
             
             // Draw default inspector
-            DrawDefaultInspector();
+            // DrawDefaultInspector();
             
             // Draw ordered properties
             DrawOrderedProperties();
