@@ -49,7 +49,16 @@ namespace GameTemplate.Editor
             DrawClassInfoBoxes();
             
             // Draw default inspector
-            DrawDefaultInspector();
+            SerializedProperty prop = serializedObject.GetIterator();
+            if (prop.NextVisible(true))
+            {
+                do
+                {
+                    if (prop.name == "m_Script") continue; // Skip script field
+                    EditorGUILayout.PropertyField(prop, true); // true = include children
+                }
+                while (prop.NextVisible(false));
+            }
             
             // Draw ordered properties
             DrawOrderedProperties();
