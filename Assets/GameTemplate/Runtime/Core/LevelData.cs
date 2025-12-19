@@ -8,6 +8,8 @@ namespace GameTemplate.Runtime.Core
     /// Basic level data structure containing essential information.
     /// Supports both Resources and Addressables loading methods.
     /// </summary>
+    
+    [CreateAssetMenu(fileName = "LevelData", menuName = "GameTemplate/Level/Default LevelData", order = 0)] 
     [Serializable]
     public class LevelData : ScriptableObject
     {
