@@ -14,6 +14,10 @@ namespace GameTemplate.Runtime.Core
         [Header("Basic Information")]
         public int levelId;
         
+        [Space(10)]
+        [InfoBox("May be json file or prefab or anything else", InfoBoxType.Info, false)]
+        public UnityEngine.Object levelObject;
+        
         /// <summary>
         /// Creates a new LevelData instance with basic information.
         /// </summary>
@@ -21,11 +25,6 @@ namespace GameTemplate.Runtime.Core
         public LevelData(int id)
         {
             levelId = id;
-        }
-
-        protected LevelData()
-        {
-            throw new NotImplementedException();
         }
 
         /// <summary>
