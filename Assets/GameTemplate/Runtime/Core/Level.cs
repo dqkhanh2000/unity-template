@@ -112,6 +112,19 @@ namespace GameTemplate.Runtime.Core
             
             Log($"Level '{levelData.LevelName}' started");
         }
+        
+        public virtual void Revive()
+        {
+            if (CurrentState != LevelState.Failed)
+            {
+                Debug.LogWarning("Level is not in a failed state!");
+                return;
+            }
+            
+            CurrentState = LevelState.Playing;
+            
+            Log($"Level '{levelData.LevelName}' revived");
+        }
 
         public virtual void Update()
         {
