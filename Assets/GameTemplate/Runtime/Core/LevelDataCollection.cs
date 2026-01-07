@@ -158,8 +158,22 @@ namespace GameTemplate.Runtime.Core
                 if (a == null && b == null) return 0;
                 if (a == null) return 1;
                 if (b == null) return -1;
-                return a.levelId.CompareTo(b.levelId);
+                return a.LevelId.CompareTo(b.LevelId);
             });
+        }
+        
+        public void AssignLevelIdsSequentially()
+        {
+            if (levels == null)
+                return;
+                
+            for (int i = 0; i < levels.Length; i++)
+            {
+                if (levels[i] != null)
+                {
+                    levels[i].LevelId = i;
+                }
+            }
         }
         
         /// <summary>

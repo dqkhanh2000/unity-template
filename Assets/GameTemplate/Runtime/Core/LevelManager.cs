@@ -117,6 +117,7 @@ namespace GameTemplate.Runtime.Core
                 Debug.LogWarning("LevelManager is already loading!");
                 return;
             }
+            levelDataCollection.AssignLevelIdsSequentially();
 
             StartCoroutine(StartLevelManagerCoroutine());
         }
@@ -361,7 +362,7 @@ namespace GameTemplate.Runtime.Core
             if (_isLoopingLevels && changeLevelNameWhenLooping)
             {
                 levelData = levelData.Clone();
-                levelData.levelId = actualLevelId;
+                levelData.LevelId = actualLevelId;
             }
 
             var task = levelLoader.LoadLevel(levelData, levelContainer);

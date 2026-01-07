@@ -176,20 +176,20 @@ namespace GameTemplate.Runtime.HiddenMenu
         
         public void SetPlayerLevel(LevelData selectedLevel)
         {
-            if (!LevelManager.Instance.IsLevelUnlocked(selectedLevel.levelId))
+            if (!LevelManager.Instance.IsLevelUnlocked(selectedLevel.LevelId))
             {
-                LevelManager.Instance.UnlockLevel(selectedLevel.levelId);
+                LevelManager.Instance.UnlockLevel(selectedLevel.LevelId);
             }
             
             LevelManager.Instance.OnLevelStarted.AddListener(LevelLoaded);
-            LevelManager.Instance.StartLevel(selectedLevel.levelId);
+            LevelManager.Instance.StartLevel(selectedLevel.LevelId);
         }
         
         private void LevelLoaded(Level level)
         {
             LevelManager.Instance.OnLevelStarted.RemoveListener(LevelLoaded);
             OnLevelLoaded?.Invoke(level);
-            LogDebug($"Level {level.LevelData.levelId} loaded via hidden menu.");
+            LogDebug($"Level {level.LevelData.LevelId} loaded via hidden menu.");
         }
     }
 } 

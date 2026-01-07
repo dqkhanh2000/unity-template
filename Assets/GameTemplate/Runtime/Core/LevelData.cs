@@ -13,8 +13,7 @@ namespace GameTemplate.Runtime.Core
     [Serializable]
     public class LevelData : ScriptableObject
     {
-        [Header("Basic Information")]
-        public int levelId;
+        private int levelId;
         
         [Space(10)]
         [InfoBox("May be json file or prefab or anything else", InfoBoxType.Info, false)]
@@ -32,7 +31,11 @@ namespace GameTemplate.Runtime.Core
         /// <summary>
         /// Gets the level ID.
         /// </summary>
-        public int LevelId => levelId;
+        public int LevelId
+        {
+            get => levelId;
+            set => levelId = value;
+        }
         
         /// <summary>
         /// Gets the level name.
