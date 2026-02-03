@@ -275,7 +275,7 @@ namespace GameTemplate.Runtime.EventSystem
             {
                 _eventQueue.Enqueue(eventRaiser);
                 
-                if (!_isProcessingQueue)
+                if (!_isProcessingQueue && EventManagerCoroutineRunner.Instance.gameObject.scene.isLoaded)
                 {
                     // Start processing the queue using the coroutine runner
                     EventManagerCoroutineRunner.Instance.StartCoroutine(ProcessEventQueue());
