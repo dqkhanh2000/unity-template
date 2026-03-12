@@ -45,6 +45,14 @@ namespace GameTemplate.Runtime.Core
         public bool IsPlaying => CurrentState == GameState.Playing;
         public ApplicationSettings ApplicationSettings => applicationSettings;
         public bool IsPaused => CurrentState == GameState.Paused;
+        
+        /// <summary>
+        /// Global gameplay time instance managed by GameManager.
+        /// Use this to track gameplay elapsed time, delta time, countdown, etc.
+        /// Automatically pauses/resumes with GameManager and is affected by Unity's TimeScale.
+        /// </summary>
+        public GameplayTime GameplayTime => _gameplayTime;
+        private GameplayTime _gameplayTime;
 
         private GameState _currentState = GameState.None;
         public GameState CurrentState
@@ -82,6 +90,9 @@ namespace GameTemplate.Runtime.Core
         
         private void Update()
         {
+            // Tick gameplay time every frame
+            _gameplayTime?.Tick();
+            
             if (IsPlaying)
             {
                 CheckAutoSave();
@@ -142,6 +153,9 @@ namespace GameTemplate.Runtime.Core
             // Load player data
             LoadPlayerData();
             
+            // Initialize global gameplay time
+            _gameplayTime = GameplayTime.CreateGlobal();
+            
             CurrentState = GameState.Initialized;
             
             // Trigger initialization event
@@ -165,6 +179,9 @@ namespace GameTemplate.Runtime.Core
             gameStartTime = Time.time;
             lastSaveTime = Time.time;
             
+            // Start gameplay time
+            _gameplayTime?.Restart();
+            
             // Start level manager
             if (LevelManager.Instance != null && autoStartLevelManager)
             {
@@ -185,6 +202,9 @@ namespace GameTemplate.Runtime.Core
                 return;
                 
             CurrentState = GameState.Paused;
+            
+            // Pause gameplay time
+            _gameplayTime?.Pause();
             
             // Pause time scale
             Time.timeScale = 0f;
@@ -207,6 +227,9 @@ namespace GameTemplate.Runtime.Core
             
             // Resume time scale
             Time.timeScale = 1f;
+            
+            // Resume gameplay time
+            _gameplayTime?.Resume();
             
             // Trigger game resumed event
             onGameResumed?.Invoke();
